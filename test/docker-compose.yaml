@@ -1,0 +1,43 @@
+version: "3.6"
+
+services:
+
+  api:
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    image: ellexidocker/about-classic:api-test
+    runtime: nvidia
+    volumes:
+      - images:/images
+    entrypoint:
+      - uvicorn
+    command:
+      - "main:app"
+      - "--host"
+      - "0.0.0.0"
+      - "--port"
+      - "8000"
+
+  web:
+    build:
+      context: ./web
+      dockerfile: Dockerfile
+    image: ellexidocker/about-classic:web-test
+    ports:
+      - "8501:8501"
+    volumes:
+      - images:/images
+    environment:
+      - API=http://api:8000/compute
+      - PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION=python
+    entrypoint:
+      - streamlit
+    command:
+      - "run"
+      - "main.py"
+    depends_on:
+      - api
+
+volumes:
+  images:

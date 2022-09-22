@@ -1,0 +1,15 @@
+tensorflow==2.9.2
+tensorflow-hub==0.12.0
+pydub==0.25.1
+fastapi==0.82.0
+uvicorn==0.18.3
+python-multipart==0.0.5
+scipy==1.9.1
+librosa==0.9.2
+matplotlib==3.5.3
+dora-search
+tqdm
+julius>=0.2.3
+diffq>=0.2.1
+openunmix
+lameenc>=1.2
