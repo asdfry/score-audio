@@ -1,4 +1,3 @@
-# import logging
 import shutil
 import time
 
@@ -9,11 +8,11 @@ from scipy.io import wavfile
 from hybrid_demucs import Demucs
 from spice import Spice
 
-# logging.getLogger("uvicorn").handlers.clear()
 
 app = FastAPI()
 spice = Spice()
 demucs = Demucs()
+
 
 @app.get("/compute", status_code=200)
 def compute(use_demucs: bool = Query(False), upload_file: UploadFile = File(...)):
@@ -32,8 +31,9 @@ def compute(use_demucs: bool = Query(False), upload_file: UploadFile = File(...)
     else:
         audio_path = spice.convert_audio_for_model(upload_file.file)  # spice에 넣기 위해 준비 (프레임레이트: 16000, 채널: 1, 형식: wav)
 
+    shutil.copy(audio_path, "audio/result.wav")
     sample_rate, audio_samples = wavfile.read(audio_path, "rb")
-    
+
     audio_inform = spice.get_information(sample_rate, audio_samples)
     score = spice.get_confidence_score(audio_samples)
 

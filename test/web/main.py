@@ -30,7 +30,9 @@ if upload_file:
             st.write(f"Duration: {dict_res['audio_information']['duration']:.2f} sec")
             st.write(f"Elapsed: {dict_res['elapsed']:.2f} sec")
             st.write(f"**Score: {int(dict_res['score']*100)} / 100**")
-            img = Image.open("images/result.png")
+            demucs_result = open("audio/result.wav", "rb").read()
+            st.audio(demucs_result, format="audio/wav")
+            img = Image.open("image/result.png")
             st.image(img, caption="Spectrogram with F0")
         else:
             st.error("Fail")

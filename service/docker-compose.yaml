@@ -8,7 +8,8 @@ services:
       dockerfile: Dockerfile
     image: ellexidocker/about-classic:api-service
     volumes:
-      - images:/images
+      - image:/image
+      - audio:/audio
     entrypoint:
       - uvicorn
     command:
@@ -26,7 +27,8 @@ services:
     ports:
       - "8501:8501"
     volumes:
-      - images:/images
+      - image:/image
+      - audio:/audio
     environment:
       - API=http://api:8000/compute
       - PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION=python
@@ -39,4 +41,5 @@ services:
       - api
 
 volumes:
-  images:
+  image:
+  audio:

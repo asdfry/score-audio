@@ -65,12 +65,12 @@ class Spice:
         # 이미지 저장
         pitch_outputs = model_output["pitch"]
         indices = range(len(pitch_outputs))
-        confident_pitch_outputs = [(i, p) for i, p, c in zip(indices, pitch_outputs, confidence_outputs) if c >= 0.2]
+        confident_pitch_outputs = [(i, p) for i, p, c in zip(indices, pitch_outputs, confidence_outputs) if c >= 0.9]
         confident_pitch_outputs_x, confident_pitch_outputs_y = zip(*confident_pitch_outputs)
 
         confident_pitch_values_hz = [self.output2hz(p) for p in confident_pitch_outputs_y]
         self.plot_stft(audio_samples / self.MAX_ABS_INT16, sample_rate=self.EXPECTED_SAMPLE_RATE)
         plt.scatter(confident_pitch_outputs_x, confident_pitch_values_hz, c="cyan")
-        plt.savefig("images/result.png")
+        plt.savefig("image/result.png")
 
         return float(score)
