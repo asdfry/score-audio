@@ -9,8 +9,8 @@ services:
     image: ellexidocker/about-classic:api-test
     runtime: nvidia
     volumes:
-      - image:/image
-      - audio:/audio
+      - ./image:/image
+      - ./audio:/audio
     entrypoint:
       - uvicorn
     command:
@@ -28,8 +28,8 @@ services:
     ports:
       - "8501:8501"
     volumes:
-      - image:/image
-      - audio:/audio
+      - ./image:/image
+      - ./audio:/audio
     environment:
       - API=http://api:8000/compute
       - PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION=python

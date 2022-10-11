@@ -1,19 +1,19 @@
 import os
-
 import requests
 import streamlit as st
-from PIL import Image
-from io import BytesIO
 
-st.set_page_config(page_title="About Classic Demo", page_icon="star", layout="centered")
+from PIL import Image
+
+
+st.set_page_config(page_title="About Classic Demo", page_icon="musical_note", layout="centered")
 
 st.title("About Classic Demo")
 
 upload_file = st.file_uploader(label="Upload audio file", type=["mp3", "mp4", "wav"])
 
 if upload_file:
-    bytesio = BytesIO(upload_file.getvalue())
-    st.audio(bytesio, format="audio/mpeg")
+    bytes = upload_file.getvalue()
+    st.audio(bytes, format="audio/mpeg")
     use_demucs = st.checkbox(label="Separate vocals and music (This makes longer to run)")
     use_gpu = st.checkbox(label="Use GPU")
     if st.button(label="RUN"):
