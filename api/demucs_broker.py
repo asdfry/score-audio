@@ -9,7 +9,7 @@ from demucs.audio import save_audio
 
 class DemucsBroker:
     def __init__(self):
-        th.hub.set_dir("./hub")
+        th.hub.set_dir("/hub")
         self.args = argparse.Namespace(
             name="mdx_extra_q",
             repo=None,

@@ -69,6 +69,6 @@ class Spice:
         confident_pitch_values_hz = [self.output2hz(p) for p in confident_pitch_outputs_y]
         self.plot_stft(audio_samples / self.MAX_ABS_INT16, sample_rate=self.EXPECTED_SAMPLE_RATE)
         plt.scatter(confident_pitch_outputs_x, confident_pitch_values_hz, c="cyan")
-        plt.savefig("image/result.png")
+        plt.savefig("/image/result.png")
 
         return float(score)

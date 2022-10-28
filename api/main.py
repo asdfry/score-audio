@@ -21,7 +21,7 @@ def compute(use_demucs: bool = Query(False), upload_file: UploadFile = File(...)
     if use_demucs:  # 음원분리 사용 시
         with open("input_audio", "wb") as f:  # 오디오 파일 복사
             shutil.copyfileobj(upload_file.file, f)
-        vocal_path = "audio/result.wav"
+        vocal_path = "/audio/result.wav"
         separate_result = demucs.separate("input_audio", vocal_path)  # 음원 분리
         if not separate_result:
             return JSONResponse(
@@ -31,7 +31,7 @@ def compute(use_demucs: bool = Query(False), upload_file: UploadFile = File(...)
     else:
         audio_path = spice.convert_audio_for_model(upload_file.file)  # spice에 넣기 위해 준비 (프레임레이트: 16000, 채널: 1, 형식: wav)
 
-    shutil.copy(audio_path, "audio/result.wav")
+    shutil.copy(audio_path, "/audio/result.wav")
     sample_rate, audio_samples = wavfile.read(audio_path, "rb")
 
     audio_inform = spice.get_information(sample_rate, audio_samples)
