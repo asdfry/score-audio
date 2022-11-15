@@ -39,7 +39,7 @@ class DemucsBroker:
         self.model.to(self.args.device)
         self.model.eval()
 
-    def separate(self, source_path, vocal_path):
+    def separate(self, source_path, vocal_path, accom_path):
         # load source
         try:
             wav = load_track(source_path, self.model.audio_channels, self.model.samplerate)
@@ -70,6 +70,15 @@ class DemucsBroker:
         vocal_stem = sources.pop(self.model.sources.index(self.args.stem))
         try:
             save_audio(vocal_stem, vocal_path, **kwargs)
+        except Exception:
+            return False
+        
+        # save accompaniment
+        other_stem = th.zeros_like(sources[0])
+        for i in sources:
+            other_stem += i
+        try:
+            save_audio(other_stem, accom_path, **kwargs)
         except Exception:
             return False
 

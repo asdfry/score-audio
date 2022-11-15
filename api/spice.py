@@ -26,15 +26,12 @@ class Spice:
         audio.export(output_path, format="wav")
         return os.path.abspath(output_path)
 
-    def plot_stft(self, x, sample_rate, show_black_and_white=False):
+    def plot_stft(self, x, sample_rate):
         x_stft = np.abs(librosa.stft(x, n_fft=2048))
         fig, ax = plt.subplots()
         fig.set_size_inches(20, 10)
         x_stft_db = librosa.amplitude_to_db(x_stft, ref=np.max)
-        if show_black_and_white:
-            librosadisplay.specshow(data=x_stft_db, y_axis="log", sr=sample_rate, cmap="gray_r")
-        else:
-            librosadisplay.specshow(data=x_stft_db, y_axis="log", sr=sample_rate)
+        librosadisplay.specshow(data=x_stft_db, y_axis="log", sr=sample_rate)
         plt.colorbar(format="%+2.0f dB")
 
     def output2hz(self, pitch_output):
@@ -53,22 +50,25 @@ class Spice:
         # 점수 계산
         audio_samples = audio_samples / self.MAX_ABS_INT16  # 부동 소수점(-1~1)으로 정규화
         model_output = self.model.signatures["serving_default"](tf.constant(audio_samples, tf.float32))
+        pitch_outputs = model_output["pitch"]
         uncertainty_outputs = model_output["uncertainty"]
         confidence_outputs = 1.0 - uncertainty_outputs
-        # score = sum([i for i in confidence_outputs]) / len(confidence_outputs)
-        # score = len([i for i in confidence_outputs if i >= 0.5]) / len(confidence_outputs)
         confidence_outputs_ = [i for i in confidence_outputs if i >= 0.2]
         score = sum(confidence_outputs_) / len(confidence_outputs_)
 
-        # 이미지 저장
-        pitch_outputs = model_output["pitch"]
+        # 이미지 저장 (confidence_score 0.9 이상에 점 생성)
         indices = range(len(pitch_outputs))
         confident_pitch_outputs = [(i, p) for i, p, c in zip(indices, pitch_outputs, confidence_outputs) if c >= 0.9]
         confident_pitch_outputs_x, confident_pitch_outputs_y = zip(*confident_pitch_outputs)
-
         confident_pitch_values_hz = [self.output2hz(p) for p in confident_pitch_outputs_y]
         self.plot_stft(audio_samples / self.MAX_ABS_INT16, sample_rate=self.EXPECTED_SAMPLE_RATE)
         plt.scatter(confident_pitch_outputs_x, confident_pitch_values_hz, c="cyan")
         plt.savefig("/image/result.png")
 
         return float(score)
+
+    def save_spectrogram(self, audio_samples):
+        audio_samples = audio_samples / self.MAX_ABS_INT16  # 부동 소수점(-1~1)으로 정규화
+        # 이미지 저장
+        self.plot_stft(audio_samples / self.MAX_ABS_INT16, sample_rate=self.EXPECTED_SAMPLE_RATE)
+        plt.savefig("/image/accom.png")
