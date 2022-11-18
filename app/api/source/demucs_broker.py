@@ -1,19 +1,21 @@
 import argparse
+import os
+
 import torch as th
 
-from demucs.separate import load_track
-from demucs.pretrained import get_model_from_args, ModelLoadingError
-from demucs.apply import apply_model, BagOfModels
+from demucs.apply import BagOfModels, apply_model
 from demucs.audio import save_audio
+from demucs.pretrained import ModelLoadingError, get_model_from_args
+from demucs.separate import load_track
 
 
 class DemucsBroker:
     def __init__(self):
-        th.hub.set_dir("/hub")
+        th.hub.set_dir(os.environ.get("HUB_PATH"))
         self.args = argparse.Namespace(
             name="mdx_extra_q",
             repo=None,
-            device=f"cuda:0",
+            device=f"cuda:{os.environ.get('DEVICE_NUM')}",
             segment=None,
             stem="vocals",
             int24=True,

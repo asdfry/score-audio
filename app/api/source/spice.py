@@ -19,8 +19,9 @@ class Spice:
         self.MAX_ABS_INT24 = 8388608.0
         self.model = hub.load("https://tfhub.dev/google/spice/2")
 
-    def convert_audio_for_model(self, input_path):
-        output_path = "converted_audio_file.wav"
+    def convert_audio(self, input_path):
+        # spice에 넣기 위해 오디오 변환 (프레임레이트: 16000, 채널: 1, 형식: wav)
+        output_path = "converted_audio.wav"
         audio = AudioSegment.from_file(input_path)
         audio = audio.set_frame_rate(self.EXPECTED_SAMPLE_RATE).set_channels(1)
         audio.export(output_path, format="wav")
@@ -42,11 +43,7 @@ class Spice:
         cqt_bin = pitch_output * PT_SLOPE + PT_OFFSET
         return FMIN * 2.0 ** (1.0 * cqt_bin / BINS_PER_OCTAVE)
 
-    def get_information(self, sample_rate, audio_samples):
-        duration = len(audio_samples) / sample_rate
-        return sample_rate, duration
-
-    def get_confidence_score(self, audio_samples):
+    def get_confidence_score(self, audio_samples, result_image_path):
         # 점수 계산
         audio_samples = audio_samples / self.MAX_ABS_INT16  # 부동 소수점(-1~1)으로 정규화
         model_output = self.model.signatures["serving_default"](tf.constant(audio_samples, tf.float32))
@@ -63,12 +60,15 @@ class Spice:
         confident_pitch_values_hz = [self.output2hz(p) for p in confident_pitch_outputs_y]
         self.plot_stft(audio_samples / self.MAX_ABS_INT16, sample_rate=self.EXPECTED_SAMPLE_RATE)
         plt.scatter(confident_pitch_outputs_x, confident_pitch_values_hz, c="cyan")
-        plt.savefig("/image/result.png")
+        plt.savefig(result_image_path)
 
         return float(score)
 
-    def save_spectrogram(self, audio_samples):
+    def get_duration(self, sample_rate, audio_samples):
+        return int(len(audio_samples) / sample_rate)
+
+    def save_spectrogram(self, audio_samples, accom_image_path):
         audio_samples = audio_samples / self.MAX_ABS_INT16  # 부동 소수점(-1~1)으로 정규화
         # 이미지 저장
         self.plot_stft(audio_samples / self.MAX_ABS_INT16, sample_rate=self.EXPECTED_SAMPLE_RATE)
-        plt.savefig("/image/accom.png")
+        plt.savefig(accom_image_path)

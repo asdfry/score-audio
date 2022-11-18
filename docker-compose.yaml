@@ -4,14 +4,18 @@ services:
 
   api:
     build:
-      context: ./api
+      context: ./app/api
       dockerfile: Dockerfile
     image: ellexidocker/about-classic:api
     runtime: nvidia
     volumes:
-      - ./image:/image
-      - ./audio:/audio
-      - ./hub:/hub
+      - ./storage:${STORAGE_DIR}
+      - ./hub:${HUB_PATH}
+    environment:
+      - STORAGE_DIR=${STORAGE_DIR}
+      - HUB_PATH=${HUB_PATH}
+      - DEVICE_NUM=${DEVICE_NUM}
+      - TZ=Asia/Seoul
     entrypoint:
       - uvicorn
     command:
@@ -20,21 +24,19 @@ services:
       - "0.0.0.0"
       - "--port"
       - "8000"
-    environment:
-      - CUDA_VISIBLE_DEVICES=3
 
   web:
     build:
-      context: ./web
+      context: ./app/web
       dockerfile: Dockerfile
     image: ellexidocker/about-classic:web
     ports:
-      - "8501:8501"
+      - 8501:8501
     volumes:
-      - ./image:/image
-      - ./audio:/audio
+      - ./storage:${STORAGE_DIR}
     environment:
       - API=http://api:8000/compute
+      - STORAGE_DIR=${STORAGE_DIR}
       - PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION=python
     entrypoint:
       - streamlit
@@ -45,5 +47,4 @@ services:
       - api
 
 volumes:
-  image:
-  audio:
+  storage:
