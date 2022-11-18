@@ -6,17 +6,16 @@ import time
 import uuid
 from datetime import datetime
 
+from demucs_broker import DemucsBroker
 from fastapi import FastAPI, File, Query, UploadFile, status
 from fastapi.responses import JSONResponse
 from scipy.io import wavfile
-
-from demucs_broker import DemucsBroker
 from spice import Spice
+from util import ready
 
 app = FastAPI()
 spice = Spice()
 demucs = DemucsBroker()
-logger = logging.getLogger("uvicorn")
 
 
 def input_spice(audio_path, image_path, accom=False):
@@ -28,15 +27,6 @@ def input_spice(audio_path, image_path, accom=False):
         duration = spice.get_duration(sample_rate, audio_samples)  # 오디오 길이 추출
         score = spice.get_confidence_score(audio_samples, image_path)
         return score, duration
-
-
-def ready(id):
-    os.mkdir(os.path.join(os.environ.get("STORAGE_DIR"), id))
-    result_audio_path = os.path.join(os.environ.get("STORAGE_DIR"), id, "result.wav")
-    result_image_path = os.path.join(os.environ.get("STORAGE_DIR"), id, "result.png")
-    accom_audio_path = os.path.join(os.environ.get("STORAGE_DIR"), id, "accom.wav")
-    accom_image_path = os.path.join(os.environ.get("STORAGE_DIR"), id, "accom.png")
-    return result_audio_path, result_image_path, accom_audio_path, accom_image_path
 
 
 @app.post("/compute", status_code=200)
@@ -58,7 +48,7 @@ def compute(use_demucs: bool = Query(False), upload_file: UploadFile = File(...)
                 content={"status_code": status.HTTP_500_INTERNAL_SERVER_ERROR, "message": "demucs fail"},
             )
     else:
-        with open(result_audio_path, "wb") as buffer:  # streamlit에서 재생 가능하도록 마운트된 볼륨으로 파일 복사
+        with open(result_audio_path, "wb") as buffer:  # 마운트된 볼륨으로 파일 복사
             shutil.copyfileobj(upload_file.file, buffer)
         score, duration = input_spice(result_audio_path, result_image_path)
 
