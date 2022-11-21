@@ -19,11 +19,11 @@ option = st.sidebar.radio(
 
 if option == options[0]:
     upload_file = st.file_uploader(label="Upload audio file", type=["mp3", "mp4", "wav"])
+    use_demucs = st.checkbox(label="Separate vocals and music (This makes longer to run)")
 
     if upload_file:
         bytes = upload_file.getvalue()
         st.audio(bytes, format="audio/mpeg")
-        use_demucs = st.checkbox(label="Separate vocals and music (This makes longer to run)")
 
     if st.button(label="RUN"):
         with st.spinner("Processing . . ."):
