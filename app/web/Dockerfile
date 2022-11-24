@@ -1,3 +1,3 @@
-FROM ellexidocker/about-classic:web-base
+FROM score-audio:web-base
 
 COPY source ./

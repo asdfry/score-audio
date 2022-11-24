@@ -7,9 +7,9 @@ import streamlit as st
 
 from util import show_text, show_media
 
-st.set_page_config(page_title="About Classic Demo", page_icon="musical_note", layout="centered")
+st.set_page_config(page_title="Score Audio Demo", page_icon="musical_note", layout="centered")
 
-st.title("About Classic Demo")
+st.title("Score Audio Demo")
 
 options = ["Upload file", "Input ID"]
 option = st.sidebar.radio(

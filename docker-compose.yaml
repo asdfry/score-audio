@@ -6,7 +6,7 @@ services:
     build:
       context: ./app/api
       dockerfile: Dockerfile
-    image: ellexidocker/about-classic:api
+    image: score-audio:api
     runtime: nvidia
     volumes:
       - ./storage:${STORAGE_DIR}
@@ -29,13 +29,13 @@ services:
     build:
       context: ./app/web
       dockerfile: Dockerfile
-    image: ellexidocker/about-classic:web
+    image: score-audio:web
     ports:
       - 8501:8501
     volumes:
       - ./storage:${STORAGE_DIR}
     environment:
-      - API=http://api:8000/compute
+      - API=http://api:8000/score
       - STORAGE_DIR=${STORAGE_DIR}
       - PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION=python
     entrypoint:

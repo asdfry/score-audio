@@ -6,10 +6,10 @@ services:
     build:
       context: ./api
       dockerfile: Dockerfile
-    image: ellexidocker/about-classic:api-base
+    image: score-audio:api-base
 
   web:
     build:
       context: ./web
       dockerfile: Dockerfile
-    image: ellexidocker/about-classic:web-base
+    image: score-audio:web-base

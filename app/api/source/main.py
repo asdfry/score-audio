@@ -11,8 +11,8 @@ app = FastAPI()
 demucs = DemucsBroker()
 
 
-@app.post("/compute", status_code=200)
-def compute(use_demucs: bool = Query(False), upload_file: UploadFile = File(...)):
+@app.post("/score", status_code=200)
+def get_score(use_demucs: bool = Query(False), upload_file: UploadFile = File(...)):
     begin_time = time.time()
     id = str(uuid.uuid4())
     result_audio_path, result_image_path, accom_audio_path, accom_image_path = ready(id)
